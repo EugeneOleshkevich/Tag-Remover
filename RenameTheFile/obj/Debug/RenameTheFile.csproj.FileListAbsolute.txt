@@ -1,0 +1,8 @@
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\bin\Debug\RenameTheFile.exe.config
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\bin\Debug\RenameTheFile.exe
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\bin\Debug\RenameTheFile.pdb
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\obj\Debug\RenameTheFile.Form1.resources
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\obj\Debug\RenameTheFile.Properties.Resources.resources
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\obj\Debug\RenameTheFile.csproj.GenerateResource.Cache
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\obj\Debug\RenameTheFile.exe
+c:\users\hp\documents\visual studio 2012\Projects\RenameTheFile\RenameTheFile\obj\Debug\RenameTheFile.pdb
