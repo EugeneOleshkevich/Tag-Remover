@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-
+//Добавить удаление тегов через запятую
 namespace RenameTheFile
 {
     public partial class Form1 : Form
@@ -21,39 +21,42 @@ namespace RenameTheFile
         class deleteTag
         {
             public string[] files;
-
-            public void renameTag(string tags)                                                          //tags - tag for delete
+            public string[] tag = new string[11];
+            public void renameTag()                                                                             //tags - tag for delete
             {
                 try
                 {
-                    if (files.Length != 0)
+                    if (files.Length != 0 && tag[0] != "")
                     {                         
-                        string pathDirectory;                                                           //Directory
-                        string nameFile;                                                                //Name of Filr
-                        int cutFirstIndex;                                                              //Index to check the tag in the word
-                        int ind = 0;                                                                    //Index last slash
-
-                        for (int i = 0; i < files.Length; i++)
+                        string pathDirectory;                                                                   //Directory
+                        string nameFile;                                                                        //Name of Filr
+                        int cutFirstIndex;                                                                      //Index to check the tag in the word
+                        int ind = 0;                                                                            //Index last slash
+                        int j=0;
+                        
+                        do
                         {
-                            cutFirstIndex = files[i].IndexOf(tags);                                     //check it for membership tags
-                            if (cutFirstIndex != -1)                                                    //if there is a tag in the word
+                            for (int i = 0; i < files.Length; i++)
                             {
-                                ind = files[i].LastIndexOf('\\');                                       //Search index last slash
-                                pathDirectory = files[i].Substring(0, (ind + 1));                       //a path to the folder with the files
-                                nameFile = files[i].Substring(ind + 1, (files[i].Length - (ind + 1)));  //get the file name
-                                cutFirstIndex = nameFile.IndexOf(tags);                                 //take the current position of the first character of the tag
-                                nameFile = nameFile.Remove(cutFirstIndex, tags.Length);                 //delete tag
-                                File.Move(files[i], pathDirectory + nameFile);                          //finish renaming
+                                if (String.IsNullOrEmpty(tag[j]))
+                                    break;
+                                cutFirstIndex = files[i].IndexOf(tag[j]);                                       //check it for membership tags
+                                if (cutFirstIndex != -1)                                                        //if there is a tag in the word
+                                {
+                                    ind = files[i].LastIndexOf('\\');                                           //Search index last slash
+                                    pathDirectory = files[i].Substring(0, (ind + 1));                           //a path to the folder with the files
+                                    nameFile = files[i].Substring(ind + 1, (files[i].Length - (ind + 1)));      //get the file name
+                                    cutFirstIndex = nameFile.IndexOf(tag[j]);                                   //take the current position of the first character of the tag
+                                    nameFile = nameFile.Remove(cutFirstIndex, tag[j].Length);                   //delete tag
+                                    File.Move(files[i], pathDirectory + nameFile);                              //finish renaming
+                                }
                             }
-                        }
+                            
+                            j++;
+                        }while(String.IsNullOrEmpty(tag[j]) == false);
                         MessageBox.Show("Completed!");
                         
                     }
-                }
-                catch (System.NullReferenceException)
-                {
-                    MessageBox.Show("Not specified the correct way!!");
-                    return;
                 }
                 catch (System.IO.FileNotFoundException)
                 {
@@ -61,6 +64,61 @@ namespace RenameTheFile
                     return;
                 }
             }
+            public void formatedTags(string inputMoreTag)                                                   //function for adding tags to an array tag
+            {
+                int startIndex = 0;
+                int cutIndex;                                                                               //check listing
+                string changeInputTags = inputMoreTag;
+
+                if (inputMoreTag.Length < 2)                                                                //if a small tag length
+                {
+                    return;
+                }
+
+                cutIndex = changeInputTags.IndexOf(' ');                                                    //checking for gaps
+                if (cutIndex != -1)                                                                         //there are gaps
+                {
+                    do
+                    {
+
+                        changeInputTags = changeInputTags.Remove(cutIndex, 1);                              //remove the space
+                        cutIndex = changeInputTags.IndexOf(' ');                                            //looking for new
+                    } while (cutIndex != -1);                                                                //runs until all spaces removed
+                }
+
+                cutIndex = changeInputTags.IndexOf(',');                                                    //looking through the enumeration tags
+                int i = 0;
+                int lenth;
+                try
+                {
+                    if (cutIndex != -1)                                                                     //if found comma
+                    {
+                        do
+                        {
+                            lenth = changeInputTags.Length;
+                            if(cutIndex == -1)
+                            {
+                                tag[i] = changeInputTags.Substring(startIndex, changeInputTags.Length);     //catch the last tag for the last comma
+                                return;
+                            }
+                            tag[i] = changeInputTags.Substring(startIndex, cutIndex);                       //We bring in an array of array-tag
+                            changeInputTags = changeInputTags.Remove(startIndex, (cutIndex + 1));           //remove the tag that we have brought
+                            cutIndex = changeInputTags.IndexOf(',');                                        //looking for a new comma
+                            i++;                                                                            //transition to the next line array-tags
+                            if (changeInputTags == ",")                                                     //if there will be only a comma and it no tag
+                                break;
+                        } while (i < tag.Length || changeInputTags == "" || cutIndex != -1);                //running until it runs in the array tags, or until it finds a blank line
+                    }
+                    else
+                    {
+                        tag[0] = changeInputTags.Substring(startIndex, (cutIndex - 1));                      //only one tag
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+                    MessageBox.Show("Going beyond!");
+                }
+            }       
         }
 
         deleteTag delTag = new deleteTag();
@@ -79,20 +137,15 @@ namespace RenameTheFile
                  */
                 int ind = delTag.files[0].LastIndexOf('\\');                                             //Search index last slash
                 string pathDirectory = delTag.files[0].Substring(0, (ind + 1));                         //a path to the folder with the files
-                textBox1.Text = pathDirectory;  
+                textBox1.Text = pathDirectory;
+                
             }
         }
 
         public void button2_Click(object sender, EventArgs e)
         {
-            string tags;
-            tags = textBox2.Text;
-            if (tags.Length > 1 && tags != "")
-            {
-                delTag.renameTag(tags);
-
-            }
-            else MessageBox.Show("Incorrect tag!");
+            delTag.formatedTags(textBox2.Text);
+            delTag.renameTag();
         }
 
         
