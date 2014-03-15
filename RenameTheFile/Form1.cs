@@ -13,32 +13,29 @@ namespace RenameTheFile
 {
     public partial class Form1 : Form
     {
-        public Form1()
-        {
-            InitializeComponent();
-        }
-
         class deleteTag
         {
             public string[] files;
-            public string[] tag = new string[11];
+            public string[] tag;
+            public string nameFile;
+            FileInfo file;
             public void renameTag()                                                                             //tags - tag for delete
             {
                 try
                 {
-                    if (files.Length != 0 && tag[0] != "")
-                    {                         
+                    if (string.IsNullOrEmpty(files[0]) == false)
+                    {
                         string pathDirectory;                                                                   //Directory
                         string nameFile;                                                                        //Name of Filr
                         int cutFirstIndex;                                                                      //Index to check the tag in the word
                         int ind = 0;                                                                            //Index last slash
-                        int j=0;
-                        
+                        int j = 0;
+
                         do
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                if (String.IsNullOrEmpty(tag[j]))
+                                if (string.IsNullOrEmpty(tag[j]) == false)
                                     break;
                                 cutFirstIndex = files[i].IndexOf(tag[j]);                                       //check it for membership tags
                                 if (cutFirstIndex != -1)                                                        //if there is a tag in the word
@@ -50,17 +47,23 @@ namespace RenameTheFile
                                     nameFile = nameFile.Remove(cutFirstIndex, tag[j].Length);                   //delete tag
                                     File.Move(files[i], pathDirectory + nameFile);                              //finish renaming
                                 }
+
                             }
-                            
+
                             j++;
-                        }while(String.IsNullOrEmpty(tag[j]) == false);
+                        } while (string.IsNullOrEmpty(tag[j]) == false);
                         MessageBox.Show("Completed!");
-                        
+
                     }
                 }
                 catch (System.IO.FileNotFoundException)
                 {
                     MessageBox.Show("No files found!");
+                    return;
+                }
+                catch (System.NullReferenceException)
+                {
+                    MessageBox.Show("Folder is not selected!");
                     return;
                 }
             }
@@ -91,12 +94,13 @@ namespace RenameTheFile
                 int lenth;
                 try
                 {
+
                     if (cutIndex != -1)                                                                     //if found comma
                     {
                         do
                         {
                             lenth = changeInputTags.Length;
-                            if(cutIndex == -1)
+                            if (cutIndex == -1)
                             {
                                 tag[i] = changeInputTags.Substring(startIndex, changeInputTags.Length);     //catch the last tag for the last comma
                                 return;
@@ -111,18 +115,57 @@ namespace RenameTheFile
                     }
                     else
                     {
-                        tag[0] = changeInputTags.Substring(startIndex, (cutIndex - 1));                      //only one tag
+                        tag[0] = changeInputTags.Substring(startIndex, changeInputTags.Length);                      //only one tag
                     }
                 }
                 catch (System.ArgumentOutOfRangeException)
                 {
                     MessageBox.Show("Going beyond!");
                 }
-            }       
+            }
+            public string startProgrammTag()
+            {
+                if (file.Exists == false)                                           
+                {
+
+                    StreamWriter write_text;                                          
+                   
+                    write_text = file.AppendText();                         
+                    write_text.WriteLine("(muzofon.com), myzuka.ru_");      
+                    write_text.Close();                                     
+                }
+                StreamReader streamReader = new StreamReader(nameFile);     
+                string str = "";                                            
+
+                while (!streamReader.EndOfStream)                           
+                {
+                    str += streamReader.ReadLine();                         
+                }
+                streamReader.Close();
+                return str;
+            }                                                              //function to create a default file if it is not and tag reading from it
+            public void saveTags(string writeTags)
+            {
+                File.WriteAllText(nameFile, writeTags);
+            }                                                          //save tags in a file, which are text box
+            public deleteTag()
+            {
+                nameFile = "FrequentlyUsedTags.txt";
+                tag = new string[10];
+                file = new FileInfo(nameFile);
+            }
+
         }
 
         deleteTag delTag = new deleteTag();
 
+        public Form1()
+        {
+            InitializeComponent();
+            textBox2.Text = delTag.startProgrammTag();   
+        }
+
+        
         public void button1_Click(object sender, EventArgs e)
         {
             DialogResult result = fbd.ShowDialog();
@@ -148,8 +191,10 @@ namespace RenameTheFile
             delTag.renameTag();
         }
 
-        
-
-        
+        public void button3_Click(object sender, EventArgs e)
+        {
+            delTag.saveTags(textBox2.Text);      
+        }
+   
     }
 }
