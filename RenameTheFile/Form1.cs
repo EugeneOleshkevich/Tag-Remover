@@ -35,8 +35,10 @@ namespace RenameTheFile
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                if (string.IsNullOrEmpty(tag[j]) == false)
+                                if (string.IsNullOrEmpty(tag[j]) == true)
+                                {
                                     break;
+                                }
                                 cutFirstIndex = files[i].IndexOf(tag[j]);                                       //check it for membership tags
                                 if (cutFirstIndex != -1)                                                        //if there is a tag in the word
                                 {
@@ -51,7 +53,7 @@ namespace RenameTheFile
                             }
 
                             j++;
-                        } while (string.IsNullOrEmpty(tag[j]) == false);
+                        } while (string.IsNullOrEmpty(tag[j]) != true);
                         MessageBox.Show("Completed!");
 
                     }
